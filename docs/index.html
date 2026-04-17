@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>社内AI活用アンケート 集計レポート</title>
+  <style>
+    :root {
+      --bg: #f6f2e9;
+      --paper: #fffdf9;
+      --ink: #1f2a24;
+      --muted: #5f6f66;
+      --line: #ddd3c3;
+      --brand: #0f766e;
+      --accent: #c97b2a;
+      --brand-soft: #d8f0ec;
+      --accent-soft: #f7ead9;
+      --shadow: 0 18px 40px rgba(31, 42, 36, 0.08);
+      --c1: #0f766e;
+      --c2: #2e9c95;
+      --c3: #67c9bc;
+      --c4: #c97b2a;
+      --c5: #e3a85d;
+      --c6: #8e7ab5;
+      --c7: #c84b63;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(15,118,110,0.08), transparent 28%),
+        radial-gradient(circle at top left, rgba(201,123,42,0.08), transparent 24%),
+        var(--bg);
+      line-height: 1.65;
+    }
+    .wrap {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(15,118,110,0.98), rgba(23,98,76,0.95));
+      color: #fff;
+      padding: 34px 28px;
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -8% -38% auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.25; }
+    h1 { margin-top: 14px; font-size: clamp(28px, 4vw, 42px); }
+    .lead {
+      margin: 16px 0 0;
+      max-width: 720px;
+      color: rgba(255,255,255,0.92);
+      font-size: 15px;
+    }
+    .meta {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.9);
+    }
+    .meta span {
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+    }
+    .grid { display: grid; gap: 18px; margin-top: 22px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card, .pie-card, .dept-card {
+      background: var(--paper);
+      border: 1px solid rgba(216,208,193,0.9);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .stat .label { color: var(--muted); font-size: 13px; }
+    .stat .value { margin-top: 8px; font-size: clamp(28px, 3vw, 38px); font-weight: 700; }
+    .stat .sub { margin-top: 10px; color: var(--muted); font-size: 13px; }
+    .section { margin-top: 34px; }
+    .section-title {
+      margin-bottom: 14px;
+      padding-left: 14px;
+      border-left: 6px solid var(--accent);
+    }
+    .section-title p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .toc a {
+      color: var(--brand);
+      text-decoration: none;
+      background: rgba(15,118,110,0.08);
+      border: 1px solid rgba(15,118,110,0.12);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+    .pie-card h3, .quote-card h3 { font-size: 18px; }
+    .pie-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 18px 0 14px;
+    }
+    .pie {
+      width: 224px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--segments);
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(31,42,36,0.04);
+    }
+    .pie::before {
+      content: attr(data-total);
+      position: absolute;
+      inset: 25%;
+      border-radius: 50%;
+      background: var(--paper);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 18px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.4;
+      box-shadow: inset 0 0 0 1px rgba(221,211,195,0.85);
+    }
+    .legend {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .legend li {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: start;
+      font-size: 14px;
+    }
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      margin-top: 6px;
+      background: var(--dot);
+    }
+    .legend-text { color: var(--ink); }
+    .legend strong { font-size: 13px; color: var(--brand); white-space: nowrap; }
+    .chart-note, .question-lead, .empty {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .quotes {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    blockquote {
+      margin: 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      background: rgba(201,123,42,0.08);
+      border-radius: 14px;
+    }
+    blockquote footer {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .dept-section {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(216,208,193,0.9);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .dept-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 14px;
+    }
+    .dept-head span {
+      color: var(--brand);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .dept-grid {
+      margin-top: 10px;
+    }
+    .footer-note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+    @media (max-width: 860px) {
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .wrap { width: min(100% - 20px, 760px); }
+      .pie { width: min(240px, 72vw); }
+    }
+    @media print {
+      body { background: #fff; }
+      .wrap { width: 100%; padding: 0; }
+      .hero, .card, .pie-card, .dept-section { box-shadow: none; }
+      .section, .card, .pie-card, .dept-section { break-inside: avoid; page-break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">社内AI活用に関する事前ヒアリング</span>
+      <h1>社内AI活用アンケート 集計レポート</h1>
+      <p class="lead">最新の回答を反映した集計レポートです。選択式は見やすいドーナツグラフ中心、自由記述は引用形式、後半に部署別集計をまとめています。</p>
+      <div class="meta">
+        <span>集計日: 2026-04-16</span>
+        <span>回答数: 16 件</span>
+        <span>形式: 縦長・印刷対応</span>
+      </div>
+    </section>
+
+    <section class="grid three">
+      <article class="card stat">
+        <div class="label">生成AIを説明できる層</div>
+        <div class="value">68.8%</div>
+        <div class="sub">11 / 16 名が「知っている（人に説明できる）」と回答</div>
+      </article>
+      <article class="card stat">
+        <div class="label">高頻度利用層</div>
+        <div class="value">68.8%</div>
+        <div class="sub">11 / 16 名が「ほぼ毎日」または「週に数回」利用</div>
+      </article>
+      <article class="card stat">
+        <div class="label">最上位の支援ニーズ</div>
+        <div class="value">75%</div>
+        <div class="sub">最多は「社内で活用事例を共有する仕組み」「ルール整備」</div>
+      </article>
+    </section>
+
+    <nav class="toc">
+      <a href="#q1-q6">Q1-Q6 基礎認知と利用状況</a>
+      <a href="#q7-q12">Q7-Q12 活用場面と不安</a>
+      <a href="#q13-q17">Q13-Q17 任せたい範囲と支援ニーズ</a>
+      <a href="#by-dept">部署別集計</a>
+    </nav>
+
+    <section class="section" id="q1-q6">
+      <div class="section-title">
+        <h2>Q1-Q6 基礎認知と利用状況</h2>
+        <p>認知度、利用経験、頻度、利用スタンスの現状を整理しています。</p>
+      </div>
+      <div class="grid two">
+        <article class="pie-card">
+  <h3>Q1. 「生成AI」という言葉を知っていますか？</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 68.75%, var(--c2) 68.75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>知っている（人に説明できる）</span><strong>11 / 68.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>聞いたことはある</span><strong>5 / 31.3%</strong></li>
+  </ul>
+  
+</article>
+        <article class="pie-card">
+  <h3>Q2. 聞いたことのある用語</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 28%, var(--c2) 28% 44%, var(--c3) 44% 56%, var(--c4) 56% 66%, var(--c5) 66% 76%, var(--c6) 76% 84%, var(--c7) 84% 88%, var(--c1) 88% 92%, var(--c2) 92% 96%, var(--c3) 96% 98%, var(--c4) 98% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>プロンプト</span><strong>14 / 87.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>トークン</span><strong>8 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>AIエージェント</span><strong>6 / 37.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>ファクトチェック</span><strong>5 / 31.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>モデル</span><strong>5 / 31.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>プロンプトエンジニアリング</span><strong>4 / 25%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>LLM</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>シンギュラリティ</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>ハルシネーション</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>AGI</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>聞いたことのある用語はない</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="pie-card">
+  <h3>Q3. 使ったことのあるAIツール</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 24.56%, var(--c2) 24.56% 43.86%, var(--c3) 43.86% 52.63%, var(--c4) 52.63% 59.65%, var(--c5) 59.65% 64.91%, var(--c6) 64.91% 70.17%, var(--c7) 70.17% 75.43%, var(--c1) 75.43% 80.69%, var(--c2) 80.69% 84.2%, var(--c3) 84.2% 87.71%, var(--c4) 87.71% 89.46%, var(--c5) 89.46% 91.21%, var(--c6) 91.21% 92.96%, var(--c7) 92.96% 94.71%, var(--c1) 94.71% 96.46%, var(--c2) 96.46% 98.21%, var(--c3) 98.21% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ChatGPT</span><strong>14 / 87.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Gemini（NotebookLM/Google AI Studioを含む）</span><strong>11 / 68.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Claude</span><strong>5 / 31.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>Suno</span><strong>4 / 25%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>Adobe Firefly</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>Microsoft Copilot</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>Nano Banana Pro</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>Notta</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Notion AI</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Runway</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>ElevenLabs</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>Genspark</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>Grok</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>Kling</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>Midjourney</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Sora</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>その他</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="card quote-card">
+  <h3>Q4. 有料AIツール名</h3>
+  <p class="question-lead">会社または個人で使っている有料ツールの自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>クロード</div></blockquote>
+<blockquote><div>chatGT、notta</div></blockquote>
+<blockquote><div>SUNO、ELEVEN LABS</div></blockquote>
+<blockquote><div>Claude、Notta(無料期間のみ)</div></blockquote>
+<blockquote><div>Runway</div></blockquote>
+<blockquote><div>adobe firefly</div></blockquote>
+<blockquote><div>Runway</div></blockquote>
+  </div>
+</article>
+        <article class="pie-card">
+  <h3>Q5. AIツールの利用頻度</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 43.75%, var(--c2) 43.75% 68.75%, var(--c3) 68.75% 87.5%, var(--c4) 87.5% 93.75%, var(--c5) 93.75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ほぼ毎日使っている</span><strong>7 / 43.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>週に数回使っている</span><strong>4 / 25%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>試したことはある程度</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>まったく使っていない</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>月に数回使っている</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  
+</article>
+        <article class="pie-card">
+  <h3>Q6. 主な利用場面</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 87.5%, var(--c2) 87.5% 93.75%, var(--c3) 93.75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>個人・業務の両方で使っている</span><strong>14 / 87.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>業務でも使っている</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>使っていない</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  
+</article>
+      </div>
+    </section>
+
+    <section class="section" id="q7-q12">
+      <div class="section-title">
+        <h2>Q7-Q12 活用場面と不安</h2>
+        <p>使ってみたい用途、ハードル、実感しているメリット、不安の内容を見やすく整理しています。</p>
+      </div>
+      <div class="grid two">
+        <article class="card quote-card">
+  <h3>Q7. 使っている・使ってみたい場面</h3>
+  <p class="question-lead">実務イメージが分かる自由記述を抜粋せず全文で並べています。</p>
+  <div class="quotes">
+    <blockquote><div>営業前の下調べ、提案内容のたたき台作成、市場の概要の把握、提案資料作成、実施スケジュール案のたたき台作成、旅行先の見どころ一覧やモデルコースの作成、人に言えない悩み相談</div></blockquote>
+<blockquote><div>資料・mtgの要約、文章校正＆誤字脱字チェック、アイディアの壁打ち</div></blockquote>
+<blockquote><div>プロモーション等の企画の相談、クライアントへの企画提案書の作成</div></blockquote>
+<blockquote><div>選曲の別タイプ出しにSunoで音楽を生成しています。</div></blockquote>
+<blockquote><div>なにか問題や課題が発生したときの解決方法のヒントがほしいとき。</div></blockquote>
+<blockquote><div>会議の議事録作成や書き起こしの生成の精度向上</div></blockquote>
+<blockquote><div>どうしたらよくなるのかとか相談してる</div></blockquote>
+<blockquote><div>CG作業で活用できるところがあれば。3Dモデリングなど。</div></blockquote>
+<blockquote><div>議事録作成や長文資料をまとめる際に要約しましょうか？と聞かれることがあり、費用がかかりそうなので、試した事はないのですが、簡単に正確かつ簡潔にまとめていただけたら嬉しいです。（AIｱｼｽﾀﾝﾄ）</div></blockquote>
+<blockquote><div>Aftereffectなどアプリでエフェクトの作り方、不具合の原因追及などの情報収集</div></blockquote>
+<blockquote><div>市場調査、言い回しのリライト</div></blockquote>
+<blockquote><div>メール文面の調整や資料の下書き、作業内容の整理などでAIを使っています。短時間でアイデアを出してくれたり、言い回しを整えたりしてくれるので助かっています。</div></blockquote>
+<blockquote><div>検索</div></blockquote>
+  </div>
+</article>
+        <article class="pie-card">
+  <h3>Q8. ハードルや困りごと</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 22.58%, var(--c2) 22.58% 41.93%, var(--c3) 41.93% 61.28%, var(--c4) 61.28% 74.18%, var(--c5) 74.18% 83.86%, var(--c6) 83.86% 90.31%, var(--c7) 90.31% 96.76%, var(--c1) 96.76% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>情報漏洩・セキュリティが不安</span><strong>7 / 43.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>期待した答えが返ってこない</span><strong>6 / 37.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>社内のルールがはっきりしていない</span><strong>6 / 37.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>使い方がわからない</span><strong>4 / 25%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>その他</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>使うきっかけがない</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>特にない</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>試す時間がない</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="pie-card">
+  <h3>Q9. 感じたメリット</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 21.82%, var(--c2) 21.82% 40%, var(--c3) 40% 56.36%, var(--c4) 56.36% 72.72%, var(--c5) 72.72% 87.27%, var(--c6) 87.27% 98.18%, var(--c7) 98.18% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>調べ物が早く終わるようになった</span><strong>12 / 75%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>アイデアの幅が広がった</span><strong>10 / 62.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>苦手な作業の心理的負担が減った</span><strong>9 / 56.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>作業時間が短縮された</span><strong>9 / 56.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>新しい知識を学べた</span><strong>8 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>アウトプットの質が上がった</span><strong>6 / 37.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>まだ使っていない／特に感じていない</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="pie-card">
+  <h3>Q10. 負担に感じている作業</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 20.37%, var(--c2) 20.37% 38.89%, var(--c3) 38.89% 55.56%, var(--c4) 55.56% 68.52%, var(--c5) 68.52% 79.63%, var(--c6) 79.63% 88.89%, var(--c7) 88.89% 94.45%, var(--c1) 94.45% 98.15%, var(--c2) 98.15% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>情報収集・リサーチ</span><strong>11 / 68.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>文章作成（メール・報告書・提案書 など）</span><strong>10 / 62.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>資料・スライド作成</span><strong>9 / 56.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>数字・データの集計・分析</span><strong>7 / 43.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>画像・動画・CG制作</span><strong>6 / 37.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>議事録・記録の作成</span><strong>5 / 31.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>社内外の調整・やり取り</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>音声・BGM・効果音に関する作業</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>繰り返しの定型作業</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="card quote-card">
+  <h3>Q11. AIに任せたい業務</h3>
+  <p class="question-lead">任せたい範囲の具体例を自由記述で整理しています。</p>
+  <div class="quotes">
+    <blockquote><div>まだ任せるという感覚はなく、たたき台を作ってもらう、アイデアラッシュを数出してもらう、が多い</div></blockquote>
+<blockquote><div>資料作成</div></blockquote>
+<blockquote><div>企画提案書　メッセージ作成</div></blockquote>
+<blockquote><div>社内の売り上げの集計など</div></blockquote>
+<blockquote><div>会議の議事録作成/書き起こしの精度向上</div></blockquote>
+<blockquote><div>請求書作成、精算書における科目・税率・ｲﾝﾎﾞｲｽ有無別の集計</div></blockquote>
+<blockquote><div>議事録作成</div></blockquote>
+  </div>
+</article>
+        <article class="pie-card">
+  <h3>Q12. AIに対して感じる不安</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 34.48%, var(--c2) 34.48% 62.07%, var(--c3) 62.07% 75.86%, var(--c4) 75.86% 86.2%, var(--c5) 86.2% 96.54%, var(--c6) 96.54% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>誤った情報が含まれている</span><strong>10 / 62.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報漏洩・プライバシーが心配</span><strong>8 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>コストがかかりそう</span><strong>4 / 25%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>自分には使いこなせなさそう</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>自分の仕事が奪われそう</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>その他</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+      </div>
+    </section>
+
+    <section class="section" id="q13-q17">
+      <div class="section-title">
+        <h2>Q13-Q17 任せたい範囲と支援ニーズ</h2>
+        <p>任せ方の温度感、必要スキル、会社への期待、セミナーテーマの希望を集約しています。</p>
+      </div>
+      <div class="grid two">
+        <article class="pie-card">
+  <h3>Q13. 業務でAIにどこまで任せたいか</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 62.5%, var(--c2) 62.5% 81.25%, var(--c3) 81.25% 93.75%, var(--c4) 93.75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>下書き・アイデア出しまで。最終判断は人がやる</span><strong>10 / 62.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>人がチェックする前提で、ある程度まで任せたい</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>あまり任せたくない／わからない</span><strong>2 / 12.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>可能なら広く任せて、人は確認だけしたい</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  
+</article>
+        <article class="pie-card">
+  <h3>Q14. 必要だと感じるスキル・知識</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 32.56%, var(--c2) 32.56% 51.16%, var(--c3) 51.16% 67.44%, var(--c4) 67.44% 81.39%, var(--c5) 81.39% 93.02%, var(--c6) 93.02% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>指示・質問の出し方</span><strong>14 / 87.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>基本的なITリテラシー・操作スキル</span><strong>8 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>自分の業務知識の言語化力</span><strong>7 / 43.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>出てきた答えが正しいかの見極め</span><strong>6 / 37.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>情報セキュリティの知識</span><strong>5 / 31.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>英語力</span><strong>3 / 18.8%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="pie-card">
+  <h3>Q15. 会社に整えてほしいサポート・環境</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 27.27%, var(--c2) 27.27% 50%, var(--c3) 50% 70.45%, var(--c4) 70.45% 88.63%, var(--c5) 88.63% 95.45%, var(--c6) 95.45% 97.72%, var(--c7) 97.72% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>社内向けのルール・ガイドライン整備</span><strong>12 / 75%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>社内で活用事例を共有する仕組み</span><strong>10 / 62.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>有料ツールの会社契約</span><strong>9 / 56.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>研修・勉強会の開催</span><strong>8 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>気軽に相談できる窓口・担当者</span><strong>3 / 18.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>その他</span><strong>1 / 6.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>業務で使うための時間の確保</span><strong>1 / 6.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="pie-card">
+  <h3>Q16. 社内AIセミナーで扱ってほしいテーマ</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 22.81%, var(--c2) 22.81% 42.11%, var(--c3) 42.11% 59.65%, var(--c4) 59.65% 75.44%, var(--c5) 75.44% 89.48%, var(--c6) 89.48% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>注意点・リスク・セキュリティ</span><strong>13 / 81.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>他社事例・活用アイデア</span><strong>11 / 68.8%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>具体的な使い方・操作方法</span><strong>10 / 62.5%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>AIの基本的な仕組み</span><strong>9 / 56.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>自分の業務への活用方法</span><strong>8 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>画像・動画生成AIの使い方</span><strong>6 / 37.5%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+        <article class="card quote-card">
+  <h3>Q17. 気になっていること・聞いてみたいこと</h3>
+  <p class="question-lead">不安や知りたいテーマを、部署とあわせて確認できるようにしています。</p>
+  <div class="quotes">
+    <blockquote><div>仕事の受け方や、責任の負い方など。</div><footer>CGI課</footer></blockquote>
+<blockquote><div>各社でているAIの今後の見通しや、進化について聞いてみたいです。</div><footer>ポスプロプラス課</footer></blockquote>
+<blockquote><div>どこまで業務に活かしていけるのかがよくわからないので教えてほしいです。</div><footer>経理課</footer></blockquote>
+<blockquote><div>AIの知識がほぼ無いので、基本的な事から教えて頂きたいです。</div><footer>経理課</footer></blockquote>
+<blockquote><div>AIごとの違い、使い方、コツなど。色々ありすぎて結局どれをどこに活用するのが最適化の判断が難しい。</div><footer>CGI課</footer></blockquote>
+<blockquote><div>AIの知識も使用した事もほとんどないので、操作方法、活用方法を教えていただけると有難いです。</div><footer>経理課</footer></blockquote>
+<blockquote><div>AIについて会社内の皆さんに比べ自分は知識が遅れていると思うので勉強して見たいです。</div><footer>ポスプロプラス課</footer></blockquote>
+  </div>
+</article>
+      </div>
+    </section>
+
+    <section class="section" id="by-dept">
+      <div class="section-title">
+        <h2>部署別集計</h2>
+        <p>部署ごとの回答人数、利用頻度、困りごと、必要な支援を1カードで比較できる形にしています。</p>
+      </div>
+      <div class="grid">
+        <section class="dept-section">
+  <div class="dept-head">
+    <h3>CGI課</h3>
+    <span>5名</span>
+  </div>
+  <div class="grid two dept-grid">
+    <article class="pie-card">
+  <h3>Q1. 「生成AI」という言葉を知っていますか？</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 80%, var(--c2) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>知っている（人に説明できる）</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>聞いたことはある</span><strong>1 / 20%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q2. 聞いたことのある用語</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 41.67%, var(--c2) 41.67% 58.34%, var(--c3) 58.34% 75.01%, var(--c4) 75.01% 91.68%, var(--c5) 91.68% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>プロンプト</span><strong>5 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>トークン</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>ファクトチェック</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>モデル</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>AIエージェント</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q3. 使ったことのあるAIツール</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 23.81%, var(--c2) 23.81% 42.86%, var(--c3) 42.86% 52.38%, var(--c4) 52.38% 61.9%, var(--c5) 61.9% 71.42%, var(--c6) 71.42% 80.94%, var(--c7) 80.94% 85.7%, var(--c1) 85.7% 90.46%, var(--c2) 90.46% 95.22%, var(--c3) 95.22% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>Gemini（NotebookLM/Google AI Studioを含む）</span><strong>5 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>ChatGPT</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Adobe Firefly</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>Microsoft Copilot</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>Runway</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>Suno</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>Kling</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>Nano Banana Pro</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Notion AI</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Sora</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q4. 有料AIツール名</h3>
+  <p class="question-lead">会社または個人で使っている有料ツールの自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>Runway</div></blockquote>
+<blockquote><div>adobe firefly</div></blockquote>
+<blockquote><div>Runway</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q5. AIツールの利用頻度</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 40%, var(--c2) 40% 80%, var(--c3) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ほぼ毎日使っている</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>週に数回使っている</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>試したことはある程度</span><strong>1 / 20%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q6. 主な利用場面</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>個人・業務の両方で使っている</span><strong>5 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="card quote-card">
+  <h3>Q7. 使っている・使ってみたい場面</h3>
+  <p class="question-lead">部署内の実務イメージが分かる自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>どうしたらよくなるのかとか相談してる</div></blockquote>
+<blockquote><div>CG作業で活用できるところがあれば。3Dモデリングなど。</div></blockquote>
+<blockquote><div>Aftereffectなどアプリでエフェクトの作り方、不具合の原因追及などの情報収集</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q8. ハードルや困りごと</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 40%, var(--c2) 40% 70%, var(--c3) 70% 90%, var(--c4) 90% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>期待した答えが返ってこない</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>社内のルールがはっきりしていない</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報漏洩・セキュリティが不安</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>試す時間がない</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q9. 感じたメリット</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 36.36%, var(--c2) 36.36% 63.63%, var(--c3) 63.63% 81.81%, var(--c4) 81.81% 90.9%, var(--c5) 90.9% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>調べ物が早く終わるようになった</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>新しい知識を学べた</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>苦手な作業の心理的負担が減った</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>アイデアの幅が広がった</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>作業時間が短縮された</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q10. 負担に感じている作業</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 20%, var(--c2) 20% 40%, var(--c3) 40% 55%, var(--c4) 55% 70%, var(--c5) 70% 80%, var(--c6) 80% 85%, var(--c7) 85% 90%, var(--c1) 90% 95%, var(--c2) 95% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>画像・動画・CG制作</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報収集・リサーチ</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>資料・スライド作成</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>文章作成（メール・報告書・提案書 など）</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>数字・データの集計・分析</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>音声・BGM・効果音に関する作業</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>議事録・記録の作成</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>繰り返しの定型作業</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>社内外の調整・やり取り</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q11. AIに任せたい業務</h3>
+  <p class="question-lead">部署内で任せたいと感じている業務の自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q12. AIに対して感じる不安</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 58.33%, var(--c3) 58.33% 75%, var(--c4) 75% 91.67%, var(--c5) 91.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>誤った情報が含まれている</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>自分の仕事が奪われそう</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>自分には使いこなせなさそう</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>情報漏洩・プライバシーが心配</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>コストがかかりそう</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q13. 業務でAIにどこまで任せたいか</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 40%, var(--c2) 40% 80%, var(--c3) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>あまり任せたくない／わからない</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>下書き・アイデア出しまで。最終判断は人がやる</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>人がチェックする前提で、ある程度まで任せたい</span><strong>1 / 20%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q14. 必要だと感じるスキル・知識</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 26.67%, var(--c2) 26.67% 53.34%, var(--c3) 53.34% 73.34%, var(--c4) 73.34% 86.67%, var(--c5) 86.67% 93.34%, var(--c6) 93.34% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>指示・質問の出し方</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>自分の業務知識の言語化力</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>出てきた答えが正しいかの見極め</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>英語力</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>基本的なITリテラシー・操作スキル</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>情報セキュリティの知識</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q15. 会社に整えてほしいサポート・環境</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 45.45%, var(--c2) 45.45% 72.72%, var(--c3) 72.72% 90.9%, var(--c4) 90.9% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>社内向けのルール・ガイドライン整備</span><strong>5 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>社内で活用事例を共有する仕組み</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>有料ツールの会社契約</span><strong>2 / 40%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>研修・勉強会の開催</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q16. 社内AIセミナーで扱ってほしいテーマ</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 30.77%, var(--c2) 30.77% 61.54%, var(--c3) 61.54% 84.62%, var(--c4) 84.62% 92.31%, var(--c5) 92.31% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>他社事例・活用アイデア</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>注意点・リスク・セキュリティ</span><strong>4 / 80%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>具体的な使い方・操作方法</span><strong>3 / 60%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>画像・動画生成AIの使い方</span><strong>1 / 20%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>自分の業務への活用方法</span><strong>1 / 20%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q17. 気になっていること・聞いてみたいこと</h3>
+  <p class="question-lead">部署内の自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>仕事の受け方や、責任の負い方など。</div><footer>CGI課</footer></blockquote>
+<blockquote><div>AIごとの違い、使い方、コツなど。色々ありすぎて結局どれをどこに活用するのが最適化の判断が難しい。</div><footer>CGI課</footer></blockquote>
+  </div>
+</article>
+  </div>
+</section>
+<section class="dept-section">
+  <div class="dept-head">
+    <h3>ポスプロプラス課</h3>
+    <span>3名</span>
+  </div>
+  <div class="grid two dept-grid">
+    <article class="pie-card">
+  <h3>Q1. 「生成AI」という言葉を知っていますか？</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 66.67%, var(--c2) 66.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>知っている（人に説明できる）</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>聞いたことはある</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q2. 聞いたことのある用語</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 42.86%, var(--c2) 42.86% 57.15%, var(--c3) 57.15% 71.44%, var(--c4) 71.44% 85.73%, var(--c5) 85.73% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>プロンプト</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>AIエージェント</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>トークン</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>プロンプトエンジニアリング</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>モデル</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q3. 使ったことのあるAIツール</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 23.08%, var(--c2) 23.08% 38.46%, var(--c3) 38.46% 53.84%, var(--c4) 53.84% 61.53%, var(--c5) 61.53% 69.22%, var(--c6) 69.22% 76.91%, var(--c7) 76.91% 84.6%, var(--c1) 84.6% 92.29%, var(--c2) 92.29% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ChatGPT</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Gemini（NotebookLM/Google AI Studioを含む）</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Notta</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>Claude</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>ElevenLabs</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>Microsoft Copilot</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>Notion AI</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>Suno</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>その他</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q4. 有料AIツール名</h3>
+  <p class="question-lead">会社または個人で使っている有料ツールの自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>SUNO、ELEVEN LABS</div></blockquote>
+<blockquote><div>Claude、Notta(無料期間のみ)</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q5. AIツールの利用頻度</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 66.67%, var(--c2) 66.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>週に数回使っている</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>ほぼ毎日使っている</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q6. 主な利用場面</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>個人・業務の両方で使っている</span><strong>3 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="card quote-card">
+  <h3>Q7. 使っている・使ってみたい場面</h3>
+  <p class="question-lead">部署内の実務イメージが分かる自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>選曲の別タイプ出しにSunoで音楽を生成しています。</div></blockquote>
+<blockquote><div>会議の議事録作成や書き起こしの生成の精度向上</div></blockquote>
+<blockquote><div>メール文面の調整や資料の下書き、作業内容の整理などでAIを使っています。短時間でアイデアを出してくれたり、言い回しを整えたりしてくれるので助かっています。</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q8. ハードルや困りごと</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 75%, var(--c3) 75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>特にない</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>その他</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>社内のルールがはっきりしていない</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q9. 感じたメリット</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 16.67%, var(--c2) 16.67% 33.34%, var(--c3) 33.34% 50.01%, var(--c4) 50.01% 66.68%, var(--c5) 66.68% 83.35%, var(--c6) 83.35% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>アイデアの幅が広がった</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>アウトプットの質が上がった</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>苦手な作業の心理的負担が減った</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>作業時間が短縮された</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>新しい知識を学べた</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>調べ物が早く終わるようになった</span><strong>2 / 66.7%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q10. 負担に感じている作業</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 20%, var(--c2) 20% 40%, var(--c3) 40% 50%, var(--c4) 50% 60%, var(--c5) 60% 70%, var(--c6) 70% 80%, var(--c7) 80% 90%, var(--c1) 90% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>情報収集・リサーチ</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>文章作成（メール・報告書・提案書 など）</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>音声・BGM・効果音に関する作業</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>画像・動画・CG制作</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>議事録・記録の作成</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>資料・スライド作成</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>社内外の調整・やり取り</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>数字・データの集計・分析</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q11. AIに任せたい業務</h3>
+  <p class="question-lead">部署内で任せたいと感じている業務の自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>社内の売り上げの集計など</div></blockquote>
+<blockquote><div>会議の議事録作成/書き起こしの精度向上</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q12. AIに対して感じる不安</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 40%, var(--c2) 40% 80%, var(--c3) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>コストがかかりそう</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報漏洩・プライバシーが心配</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>誤った情報が含まれている</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q13. 業務でAIにどこまで任せたいか</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 66.67%, var(--c2) 66.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>下書き・アイデア出しまで。最終判断は人がやる</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>人がチェックする前提で、ある程度まで任せたい</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q14. 必要だと感じるスキル・知識</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 55.55%, var(--c3) 55.55% 66.66%, var(--c4) 66.66% 77.77%, var(--c5) 77.77% 88.88%, var(--c6) 88.88% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>指示・質問の出し方</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>自分の業務知識の言語化力</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>英語力</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>基本的なITリテラシー・操作スキル</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>出てきた答えが正しいかの見極め</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>情報セキュリティの知識</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q15. 会社に整えてほしいサポート・環境</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 37.5%, var(--c2) 37.5% 62.5%, var(--c3) 62.5% 87.5%, var(--c4) 87.5% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>有料ツールの会社契約</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>社内で活用事例を共有する仕組み</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>社内向けのルール・ガイドライン整備</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>研修・勉強会の開催</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q16. 社内AIセミナーで扱ってほしいテーマ</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 25%, var(--c2) 25% 41.67%, var(--c3) 41.67% 58.34%, var(--c4) 58.34% 75.01%, var(--c5) 75.01% 91.68%, var(--c6) 91.68% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>注意点・リスク・セキュリティ</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>AIの基本的な仕組み</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>画像・動画生成AIの使い方</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>自分の業務への活用方法</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>他社事例・活用アイデア</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>具体的な使い方・操作方法</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q17. 気になっていること・聞いてみたいこと</h3>
+  <p class="question-lead">部署内の自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>各社でているAIの今後の見通しや、進化について聞いてみたいです。</div><footer>ポスプロプラス課</footer></blockquote>
+<blockquote><div>AIについて会社内の皆さんに比べ自分は知識が遅れていると思うので勉強して見たいです。</div><footer>ポスプロプラス課</footer></blockquote>
+  </div>
+</article>
+  </div>
+</section>
+<section class="dept-section">
+  <div class="dept-head">
+    <h3>経理課</h3>
+    <span>3名</span>
+  </div>
+  <div class="grid two dept-grid">
+    <article class="pie-card">
+  <h3>Q1. 「生成AI」という言葉を知っていますか？</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 66.67%, var(--c2) 66.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>聞いたことはある</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>知っている（人に説明できる）</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q2. 聞いたことのある用語</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 16.67%, var(--c2) 16.67% 33.34%, var(--c3) 33.34% 50.01%, var(--c4) 50.01% 66.68%, var(--c5) 66.68% 83.35%, var(--c6) 83.35% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>AIエージェント</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>シンギュラリティ</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>トークン</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>ファクトチェック</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>プロンプト</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>聞いたことのある用語はない</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q3. 使ったことのあるAIツール</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 75%, var(--c3) 75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ChatGPT</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Adobe Firefly</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Grok</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q4. 有料AIツール名</h3>
+  <p class="question-lead">会社または個人で使っている有料ツールの自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q5. AIツールの利用頻度</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 66.67%, var(--c2) 66.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>試したことはある程度</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>まったく使っていない</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q6. 主な利用場面</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 66.67%, var(--c2) 66.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>個人・業務の両方で使っている</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>使っていない</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  
+</article>
+    <article class="card quote-card">
+  <h3>Q7. 使っている・使ってみたい場面</h3>
+  <p class="question-lead">部署内の実務イメージが分かる自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>なにか問題や課題が発生したときの解決方法のヒントがほしいとき。</div></blockquote>
+<blockquote><div>議事録作成や長文資料をまとめる際に要約しましょうか？と聞かれることがあり、費用がかかりそうなので、試した事はないのですが、簡単に正確かつ簡潔にまとめていただけたら嬉しいです。（AIｱｼｽﾀﾝﾄ）</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q8. ハードルや困りごと</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 55.55%, var(--c3) 55.55% 77.77%, var(--c4) 77.77% 88.88%, var(--c5) 88.88% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>使い方がわからない</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>使うきっかけがない</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報漏洩・セキュリティが不安</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>その他</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>社内のルールがはっきりしていない</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q9. 感じたメリット</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 50%, var(--c3) 50% 66.67%, var(--c4) 66.67% 83.34%, var(--c5) 83.34% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>アイデアの幅が広がった</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>まだ使っていない／特に感じていない</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>苦手な作業の心理的負担が減った</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>作業時間が短縮された</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>調べ物が早く終わるようになった</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q10. 負担に感じている作業</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 25%, var(--c2) 25% 50%, var(--c3) 50% 62.5%, var(--c4) 62.5% 75%, var(--c5) 75% 87.5%, var(--c6) 87.5% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>数字・データの集計・分析</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>文章作成（メール・報告書・提案書 など）</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>議事録・記録の作成</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>資料・スライド作成</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>社内外の調整・やり取り</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>情報収集・リサーチ</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q11. AIに任せたい業務</h3>
+  <p class="question-lead">部署内で任せたいと感じている業務の自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>請求書作成、精算書における科目・税率・ｲﾝﾎﾞｲｽ有無別の集計</div></blockquote>
+<blockquote><div>議事録作成</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q12. AIに対して感じる不安</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 66.66%, var(--c3) 66.66% 83.33%, var(--c4) 83.33% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>誤った情報が含まれている</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報漏洩・プライバシーが心配</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>コストがかかりそう</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>自分には使いこなせなさそう</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q13. 業務でAIにどこまで任せたいか</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 66.66%, var(--c3) 66.66% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>下書き・アイデア出しまで。最終判断は人がやる</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>可能なら広く任せて、人は確認だけしたい</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>人がチェックする前提で、ある程度まで任せたい</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q14. 必要だと感じるスキル・知識</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 37.5%, var(--c2) 37.5% 62.5%, var(--c3) 62.5% 87.5%, var(--c4) 87.5% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>指示・質問の出し方</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>基本的なITリテラシー・操作スキル</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>出てきた答えが正しいかの見極め</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>情報セキュリティの知識</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q15. 会社に整えてほしいサポート・環境</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 30%, var(--c2) 30% 60%, var(--c3) 60% 80%, var(--c4) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>気軽に相談できる窓口・担当者</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>研修・勉強会の開催</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>社内で活用事例を共有する仕組み</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>社内向けのルール・ガイドライン整備</span><strong>2 / 66.7%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q16. 社内AIセミナーで扱ってほしいテーマ</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 23.08%, var(--c2) 23.08% 46.16%, var(--c3) 46.16% 69.24%, var(--c4) 69.24% 84.62%, var(--c5) 84.62% 92.31%, var(--c6) 92.31% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>AIの基本的な仕組み</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>具体的な使い方・操作方法</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>自分の業務への活用方法</span><strong>3 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>注意点・リスク・セキュリティ</span><strong>2 / 66.7%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>画像・動画生成AIの使い方</span><strong>1 / 33.3%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>他社事例・活用アイデア</span><strong>1 / 33.3%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q17. 気になっていること・聞いてみたいこと</h3>
+  <p class="question-lead">部署内の自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>どこまで業務に活かしていけるのかがよくわからないので教えてほしいです。</div><footer>経理課</footer></blockquote>
+<blockquote><div>AIの知識がほぼ無いので、基本的な事から教えて頂きたいです。</div><footer>経理課</footer></blockquote>
+<blockquote><div>AIの知識も使用した事もほとんどないので、操作方法、活用方法を教えていただけると有難いです。</div><footer>経理課</footer></blockquote>
+  </div>
+</article>
+  </div>
+</section>
+<section class="dept-section">
+  <div class="dept-head">
+    <h3>マーケティング営業課</h3>
+    <span>2名</span>
+  </div>
+  <div class="grid two dept-grid">
+    <article class="pie-card">
+  <h3>Q1. 「生成AI」という言葉を知っていますか？</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>知っている（人に説明できる）</span><strong>2 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q2. 聞いたことのある用語</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 25%, var(--c2) 25% 50%, var(--c3) 50% 62.5%, var(--c4) 62.5% 75%, var(--c5) 75% 87.5%, var(--c6) 87.5% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>トークン</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>プロンプト</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>AIエージェント</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>LLM</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>ファクトチェック</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>プロンプトエンジニアリング</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q3. 使ったことのあるAIツール</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 28.57%, var(--c2) 28.57% 57.14%, var(--c3) 57.14% 85.71%, var(--c4) 85.71% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ChatGPT</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Claude</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Gemini（NotebookLM/Google AI Studioを含む）</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>Notta</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q4. 有料AIツール名</h3>
+  <p class="question-lead">会社または個人で使っている有料ツールの自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>クロード</div></blockquote>
+<blockquote><div>chatGT、notta</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q5. AIツールの利用頻度</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ほぼ毎日使っている</span><strong>2 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q6. 主な利用場面</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>個人・業務の両方で使っている</span><strong>2 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="card quote-card">
+  <h3>Q7. 使っている・使ってみたい場面</h3>
+  <p class="question-lead">部署内の実務イメージが分かる自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>営業前の下調べ、提案内容のたたき台作成、市場の概要の把握、提案資料作成、実施スケジュール案のたたき台作成、旅行先の見どころ一覧やモデルコースの作成、人に言えない悩み相談</div></blockquote>
+<blockquote><div>資料・mtgの要約、文章校正＆誤字脱字チェック、アイディアの壁打ち</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q8. ハードルや困りごと</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 66.66%, var(--c3) 66.66% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>期待した答えが返ってこない</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>使い方がわからない</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報漏洩・セキュリティが不安</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q9. 感じたメリット</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 18.18%, var(--c2) 18.18% 36.36%, var(--c3) 36.36% 54.54%, var(--c4) 54.54% 72.72%, var(--c5) 72.72% 90.9%, var(--c6) 90.9% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>アイデアの幅が広がった</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>苦手な作業の心理的負担が減った</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>作業時間が短縮された</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>新しい知識を学べた</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>調べ物が早く終わるようになった</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>アウトプットの質が上がった</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q10. 負担に感じている作業</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 28.57%, var(--c2) 28.57% 57.14%, var(--c3) 57.14% 71.43%, var(--c4) 71.43% 85.72%, var(--c5) 85.72% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>資料・スライド作成</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報収集・リサーチ</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>議事録・記録の作成</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>数字・データの集計・分析</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>文章作成（メール・報告書・提案書 など）</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q11. AIに任せたい業務</h3>
+  <p class="question-lead">部署内で任せたいと感じている業務の自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>まだ任せるという感覚はなく、たたき台を作ってもらう、アイデアラッシュを数出してもらう、が多い</div></blockquote>
+<blockquote><div>資料作成</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q12. AIに対して感じる不安</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 66.67%, var(--c2) 66.67% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>誤った情報が含まれている</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報漏洩・プライバシーが心配</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q13. 業務でAIにどこまで任せたいか</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>下書き・アイデア出しまで。最終判断は人がやる</span><strong>2 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q14. 必要だと感じるスキル・知識</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 40%, var(--c2) 40% 80%, var(--c3) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>基本的なITリテラシー・操作スキル</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>指示・質問の出し方</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報セキュリティの知識</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q15. 会社に整えてほしいサポート・環境</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 66.66%, var(--c3) 66.66% 83.33%, var(--c4) 83.33% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>社内で活用事例を共有する仕組み</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>有料ツールの会社契約</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>研修・勉強会の開催</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>社内向けのルール・ガイドライン整備</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q16. 社内AIセミナーで扱ってほしいテーマ</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 28.57%, var(--c2) 28.57% 57.14%, var(--c3) 57.14% 71.43%, var(--c4) 71.43% 85.72%, var(--c5) 85.72% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>AIの基本的な仕組み</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>他社事例・活用アイデア</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>具体的な使い方・操作方法</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>自分の業務への活用方法</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>注意点・リスク・セキュリティ</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q17. 気になっていること・聞いてみたいこと</h3>
+  <p class="question-lead">部署内の自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+  </div>
+</section>
+<section class="dept-section">
+  <div class="dept-head">
+    <h3>東京支社</h3>
+    <span>2名</span>
+  </div>
+  <div class="grid two dept-grid">
+    <article class="pie-card">
+  <h3>Q1. 「生成AI」という言葉を知っていますか？</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>知っている（人に説明できる）</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>聞いたことはある</span><strong>1 / 50%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q2. 聞いたことのある用語</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 13.33%, var(--c2) 13.33% 26.66%, var(--c3) 26.66% 39.99%, var(--c4) 39.99% 53.32%, var(--c5) 53.32% 66.65%, var(--c6) 66.65% 73.32%, var(--c7) 73.32% 79.99%, var(--c1) 79.99% 86.66%, var(--c2) 86.66% 93.33%, var(--c3) 93.33% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>AIエージェント</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>トークン</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>ハルシネーション</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>プロンプト</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>プロンプトエンジニアリング</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>AGI</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>LLM</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>シンギュラリティ</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>ファクトチェック</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>モデル</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q3. 使ったことのあるAIツール</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 20%, var(--c2) 20% 40%, var(--c3) 40% 60%, var(--c4) 60% 70%, var(--c5) 70% 80%, var(--c6) 80% 90%, var(--c7) 90% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ChatGPT</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Claude</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>Nano Banana Pro</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>Gemini（NotebookLM/Google AI Studioを含む）</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>Genspark</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>Midjourney</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c7)'></span><span class='legend-text'>Suno</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q4. 有料AIツール名</h3>
+  <p class="question-lead">会社または個人で使っている有料ツールの自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q5. AIツールの利用頻度</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ほぼ毎日使っている</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>月に数回使っている</span><strong>1 / 50%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q6. 主な利用場面</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>業務でも使っている</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>個人・業務の両方で使っている</span><strong>1 / 50%</strong></li>
+  </ul>
+  
+</article>
+    <article class="card quote-card">
+  <h3>Q7. 使っている・使ってみたい場面</h3>
+  <p class="question-lead">部署内の実務イメージが分かる自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>市場調査、言い回しのリライト</div></blockquote>
+<blockquote><div>検索</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q8. ハードルや困りごと</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 33.33%, var(--c2) 33.33% 66.66%, var(--c3) 66.66% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>その他</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>期待した答えが返ってこない</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報漏洩・セキュリティが不安</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q9. 感じたメリット</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 22.22%, var(--c2) 22.22% 44.44%, var(--c3) 44.44% 66.66%, var(--c4) 66.66% 88.88%, var(--c5) 88.88% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>アイデアの幅が広がった</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>アウトプットの質が上がった</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>作業時間が短縮された</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>調べ物が早く終わるようになった</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>苦手な作業の心理的負担が減った</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q10. 負担に感じている作業</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 20%, var(--c2) 20% 40%, var(--c3) 40% 60%, var(--c4) 60% 80%, var(--c5) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>議事録・記録の作成</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>資料・スライド作成</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報収集・リサーチ</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>数字・データの集計・分析</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>文章作成（メール・報告書・提案書 など）</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q11. AIに任せたい業務</h3>
+  <p class="question-lead">部署内で任せたいと感じている業務の自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q12. AIに対して感じる不安</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>その他</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報漏洩・プライバシーが心配</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q13. 業務でAIにどこまで任せたいか</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>下書き・アイデア出しまで。最終判断は人がやる</span><strong>2 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q14. 必要だと感じるスキル・知識</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 75%, var(--c3) 75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>指示・質問の出し方</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>基本的なITリテラシー・操作スキル</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報セキュリティの知識</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q15. 会社に整えてほしいサポート・環境</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 25%, var(--c2) 25% 50%, var(--c3) 50% 75%, var(--c4) 75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>その他</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>研修・勉強会の開催</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>社内向けのルール・ガイドライン整備</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>有料ツールの会社契約</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q16. 社内AIセミナーで扱ってほしいテーマ</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 25%, var(--c2) 25% 50%, var(--c3) 50% 62.5%, var(--c4) 62.5% 75%, var(--c5) 75% 87.5%, var(--c6) 87.5% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>他社事例・活用アイデア</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>注意点・リスク・セキュリティ</span><strong>2 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>AIの基本的な仕組み</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>画像・動画生成AIの使い方</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>具体的な使い方・操作方法</span><strong>1 / 50%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>自分の業務への活用方法</span><strong>1 / 50%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q17. 気になっていること・聞いてみたいこと</h3>
+  <p class="question-lead">部署内の自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+  </div>
+</section>
+<section class="dept-section">
+  <div class="dept-head">
+    <h3>ビジネスプロデュース本部</h3>
+    <span>1名</span>
+  </div>
+  <div class="grid two dept-grid">
+    <article class="pie-card">
+  <h3>Q1. 「生成AI」という言葉を知っていますか？</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>知っている（人に説明できる）</span><strong>1 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q2. 聞いたことのある用語</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>プロンプト</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>モデル</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q3. 使ったことのあるAIツール</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ChatGPT</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>Gemini（NotebookLM/Google AI Studioを含む）</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q4. 有料AIツール名</h3>
+  <p class="question-lead">会社または個人で使っている有料ツールの自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q5. AIツールの利用頻度</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>ほぼ毎日使っている</span><strong>1 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q6. 主な利用場面</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>個人・業務の両方で使っている</span><strong>1 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="card quote-card">
+  <h3>Q7. 使っている・使ってみたい場面</h3>
+  <p class="question-lead">部署内の実務イメージが分かる自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>プロモーション等の企画の相談、クライアントへの企画提案書の作成</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q8. ハードルや困りごと</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>社内のルールがはっきりしていない</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>情報漏洩・セキュリティが不安</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q9. 感じたメリット</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 16.67%, var(--c2) 16.67% 33.34%, var(--c3) 33.34% 50.01%, var(--c4) 50.01% 66.68%, var(--c5) 66.68% 83.35%, var(--c6) 83.35% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>アイデアの幅が広がった</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>アウトプットの質が上がった</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>苦手な作業の心理的負担が減った</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>作業時間が短縮された</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>新しい知識を学べた</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c6)'></span><span class='legend-text'>調べ物が早く終わるようになった</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q10. 負担に感じている作業</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 25%, var(--c2) 25% 50%, var(--c3) 50% 75%, var(--c4) 75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>画像・動画・CG制作</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>資料・スライド作成</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>情報収集・リサーチ</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>文章作成（メール・報告書・提案書 など）</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q11. AIに任せたい業務</h3>
+  <p class="question-lead">部署内で任せたいと感じている業務の自由記述です。</p>
+  <div class="quotes">
+    <blockquote><div>企画提案書　メッセージ作成</div></blockquote>
+  </div>
+</article>
+    <article class="pie-card">
+  <h3>Q12. AIに対して感じる不安</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>誤った情報が含まれている</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q13. 業務でAIにどこまで任せたいか</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>下書き・アイデア出しまで。最終判断は人がやる</span><strong>1 / 100%</strong></li>
+  </ul>
+  
+</article>
+    <article class="pie-card">
+  <h3>Q14. 必要だと感じるスキル・知識</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 50%, var(--c2) 50% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>基本的なITリテラシー・操作スキル</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>自分の業務知識の言語化力</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q15. 会社に整えてほしいサポート・環境</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 20%, var(--c2) 20% 40%, var(--c3) 40% 60%, var(--c4) 60% 80%, var(--c5) 80% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>業務で使うための時間の確保</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>研修・勉強会の開催</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>社内で活用事例を共有する仕組み</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>社内向けのルール・ガイドライン整備</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c5)'></span><span class='legend-text'>有料ツールの会社契約</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="pie-card">
+  <h3>Q16. 社内AIセミナーで扱ってほしいテーマ</h3>
+  <div class="pie-wrap">
+    <div class="pie" data-total="回答者比" style="--segments: conic-gradient(var(--c1) 0% 25%, var(--c2) 25% 50%, var(--c3) 50% 75%, var(--c4) 75% 100%);"></div>
+  </div>
+  <ul class="legend">
+    <li><span class='dot' style='--dot:var(--c1)'></span><span class='legend-text'>AIの基本的な仕組み</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c2)'></span><span class='legend-text'>画像・動画生成AIの使い方</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c3)'></span><span class='legend-text'>具体的な使い方・操作方法</span><strong>1 / 100%</strong></li>
+<li><span class='dot' style='--dot:var(--c4)'></span><span class='legend-text'>注意点・リスク・セキュリティ</span><strong>1 / 100%</strong></li>
+  </ul>
+  <p class="chart-note">複数選択のため、円グラフは選択内構成比で表示しています。割合表記は回答者比です。</p>
+</article>
+    <article class="card quote-card">
+  <h3>Q17. 気になっていること・聞いてみたいこと</h3>
+  <p class="question-lead">部署内の自由記述です。</p>
+  <div class="quotes">
+    <p class="empty">自由記述の回答はまだありません。</p>
+  </div>
+</article>
+  </div>
+</section>
+      </div>
+    </section>
+
+    <p class="footer-note">複数選択設問の凡例はすべて回答者比で表示しています。円グラフ本体は上位項目を中心に見やすく再構成しています。</p>
+  </main>
+</body>
+</html>

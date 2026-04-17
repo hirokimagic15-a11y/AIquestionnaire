@@ -1,0 +1,13 @@
+.~lock*
+*.tmp
+docs_index_tmp.html
+*.xlsx
+*.zip
+create_meeting_minutes.js
+meeting-processor.skill
+meeting-processor/
+minutes_data.json
+send_email_auto.py
+update_ai_report.ps1
+会議議事録_2026.04.15.txt
+社内AI活用アンケート_集計レポート_2026-04-16.html
