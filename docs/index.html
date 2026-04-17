@@ -124,6 +124,23 @@
       border-radius: 999px;
       font-size: 13px;
     }
+    .subtoc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+    .subtoc a {
+      color: var(--brand);
+      text-decoration: none;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(15,118,110,0.18);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 24px rgba(31, 42, 36, 0.06);
+    }
     .pie-card h3, .quote-card h3 { font-size: 18px; }
     .pie-wrap {
       display: flex;
@@ -596,8 +613,16 @@
         <h2>部署別集計</h2>
         <p>部署ごとの回答人数、利用頻度、困りごと、必要な支援を1カードで比較できる形にしています。</p>
       </div>
+      <nav class="subtoc">
+        <a href='#dept-1'>CGI課</a>
+<a href='#dept-2'>ポスプロプラス課</a>
+<a href='#dept-3'>経理課</a>
+<a href='#dept-4'>マーケティング営業課</a>
+<a href='#dept-5'>東京支社</a>
+<a href='#dept-6'>ビジネスプロデュース本部</a>
+      </nav>
       <div class="grid">
-        <section class="dept-section">
+        <section class="dept-section" id="dept-1">
   <div class="dept-head">
     <h3>CGI課</h3>
     <span>5名</span>
@@ -817,7 +842,7 @@
 </article>
   </div>
 </section>
-<section class="dept-section">
+<section class="dept-section" id="dept-2">
   <div class="dept-head">
     <h3>ポスプロプラス課</h3>
     <span>3名</span>
@@ -1032,7 +1057,7 @@
 </article>
   </div>
 </section>
-<section class="dept-section">
+<section class="dept-section" id="dept-3">
   <div class="dept-head">
     <h3>経理課</h3>
     <span>3名</span>
@@ -1241,7 +1266,7 @@
 </article>
   </div>
 </section>
-<section class="dept-section">
+<section class="dept-section" id="dept-4">
   <div class="dept-head">
     <h3>マーケティング営業課</h3>
     <span>2名</span>
@@ -1439,7 +1464,7 @@
 </article>
   </div>
 </section>
-<section class="dept-section">
+<section class="dept-section" id="dept-5">
   <div class="dept-head">
     <h3>東京支社</h3>
     <span>2名</span>
@@ -1645,7 +1670,7 @@
 </article>
   </div>
 </section>
-<section class="dept-section">
+<section class="dept-section" id="dept-6">
   <div class="dept-head">
     <h3>ビジネスプロデュース本部</h3>
     <span>1名</span>
