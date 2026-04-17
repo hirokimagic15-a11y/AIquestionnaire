@@ -351,6 +351,33 @@
       .wrap { width: min(100% - 20px, 760px); }
       .pie { width: min(240px, 72vw); }
       .pie-wrap { display: none; }
+      .pie-card, .quote-card, .card {
+        padding: 18px;
+      }
+      .pie-card h3, .quote-card h3 {
+        font-size: 17px;
+        line-height: 1.4;
+      }
+      .legend {
+        gap: 12px;
+      }
+      .legend li {
+        grid-template-columns: auto 1fr;
+        gap: 6px 10px;
+        align-items: start;
+      }
+      .legend strong {
+        grid-column: 2;
+        justify-self: start;
+        white-space: normal;
+        font-size: 12px;
+      }
+      .legend-text {
+        line-height: 1.45;
+      }
+      .chart-note, .question-lead, .empty {
+        font-size: 12px;
+      }
       .fixed-nav { display: none; }
       .mobile-nav {
         display: block;
