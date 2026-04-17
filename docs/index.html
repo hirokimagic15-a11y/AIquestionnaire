@@ -296,6 +296,19 @@
       background: rgba(15,118,110,0.08);
       border: 1px solid rgba(15,118,110,0.1);
     }
+    .fixed-nav-group {
+      display: grid;
+      gap: 8px;
+    }
+    .fixed-nav-group.links {
+      grid-template-columns: 1fr;
+    }
+    .fixed-nav-subtitle {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
     @media (max-width: 860px) {
       .grid.two, .grid.three { grid-template-columns: 1fr; }
       .wrap { width: min(100% - 20px, 760px); }
@@ -313,6 +326,15 @@
       .fixed-nav-title {
         grid-column: 1 / -1;
         font-size: 11px;
+      }
+      .fixed-nav-group {
+        grid-column: 1 / -1;
+      }
+      .fixed-nav-group.links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .fixed-nav-subtitle {
+        grid-column: 1 / -1;
       }
       .fixed-nav a {
         text-align: center;
@@ -1915,11 +1937,22 @@
   </main>
   <nav class="fixed-nav" aria-label="固定ナビゲーション">
     <div class="fixed-nav-title">Section Navigation</div>
-    <a href="#top">トップ</a>
-    <a href="#q1-q6">Q1-Q6</a>
-    <a href="#q7-q12">Q7-Q12</a>
-    <a href="#q13-q17">Q13-Q17</a>
-    <a href="#by-dept">部署別</a>
+    <div class="fixed-nav-group links">
+      <a href="#top">トップ</a>
+      <a href="#q1-q6">Q1-Q6</a>
+      <a href="#q7-q12">Q7-Q12</a>
+      <a href="#q13-q17">Q13-Q17</a>
+      <a href="#by-dept">部署別</a>
+    </div>
+    <div class="fixed-nav-group links">
+      <div class="fixed-nav-subtitle">部署別ショートカット</div>
+      <a href='#dept-1'>CGI課</a>
+<a href='#dept-2'>ポスプロプラス課</a>
+<a href='#dept-3'>経理課</a>
+<a href='#dept-4'>マーケティング営業課</a>
+<a href='#dept-5'>東京支社</a>
+<a href='#dept-6'>ビジネスプロデュース本部</a>
+    </div>
   </nav>
 </body>
 </html>
