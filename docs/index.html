@@ -87,6 +87,25 @@
       border: 1px solid rgba(255,255,255,0.18);
       border-radius: 999px;
     }
+    .summary-block {
+      margin-top: 20px;
+      padding: 20px 22px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.94), rgba(248,244,236,0.96));
+      border: 1px solid rgba(216,208,193,0.95);
+      box-shadow: var(--shadow);
+    }
+    .summary-block p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 14px;
+    }
+    .summary-block p + p {
+      margin-top: 12px;
+    }
+    .summary-block strong {
+      color: var(--brand);
+    }
     .grid { display: grid; gap: 18px; margin-top: 22px; }
     .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -361,9 +380,13 @@
       <div class="meta">
         <span>集計日: 2026-04-16</span>
         <span>回答数: 16 件</span>
-        <span>形式: 縦長・印刷対応</span>
       </div>
     </section>
+
+    <section class="summary-block">
+  <p>今回の回答では、生成AIへの認知と利用は全体としてかなり進んでおり、日常的に使う層も一定数います。一方で、活用を広げるうえでは <strong>ルール整備</strong> と <strong>社内での事例共有</strong> への期待が特に大きく、<strong>情報漏洩・セキュリティ</strong> や <strong>期待した答えが返らないこと</strong> への不安も継続して見られます。</p>
+  <p>業務面では <strong>情報収集・リサーチ（）</strong>、<strong>資料・スライド作成（）</strong>、文章作成まわりに負担感が集まっており、AIにはまず <strong>下書き・アイデア出し</strong> を担ってほしいという傾向が中心です。全体として、全面自動化よりも <strong>人が最終判断する前提で使いやすくする環境整備</strong> が求められている状態です。</p>
+</section>
 
     <section class="grid three">
       <article class="card stat">
