@@ -36,9 +36,14 @@
       line-height: 1.65;
     }
     .wrap {
-      width: min(980px, calc(100% - 32px));
-      margin: 0 auto;
+      width: min(980px, calc(100% - 420px));
+      margin: 0 auto 0 24px;
       padding: 24px 0 64px;
+    }
+    @media (min-width: 1400px) {
+      .wrap {
+        margin-left: max(24px, calc(50vw - 700px));
+      }
     }
     .hero {
       background: linear-gradient(135deg, rgba(15,118,110,0.98), rgba(23,98,76,0.95));
@@ -466,7 +471,7 @@
       <h1>社内AI活用アンケート 集計レポート</h1>
       <p class="lead">最新の回答を反映した集計レポートです。選択式は見やすいドーナツグラフ中心、自由記述は引用形式、後半に部署別集計をまとめています。</p>
       <div class="meta">
-        <span>反映日時: 2026-04-22 17:24</span>
+        <span>反映日時: 2026-04-22 17:30</span>
         <span>回答数: 26 件</span>
       </div>
     </section>
